@@ -3,18 +3,10 @@ from flask_pymongo import PyMongo, ObjectId
 from flask_cors import CORS
 import pdfkit
 
-from dotenv import load_dotenv
-import os
-
-load_dotenv()
-
-Key = os.environ.get("KEY_GMAIL")
-Url = os.environ.get("URL_DBM")
-
 app = Flask(__name__)
 #Dar dirección Local
 app.config['SECRET_KEY'] = 'mysecretkey'
-app.config['MONGO_URI'] = Url
+app.config['MONGO_URI'] = 'mongodb+srv://cortegana:hV7fXizMZLzN7PR5@cluster0.jvpg63q.mongodb.net/Nobel'
 
 #Se declara la conexión con la variable mongo
 mongo = PyMongo(app)
@@ -601,8 +593,8 @@ def generarPDF(DNI):
 
 # Función para enviar correo electrónico con adjunto
 def enviarCorreo(destinatario, asunto, cuerpo, adjunto):
-    remitente = 'ccortegana@unitru.edu.pe'
-    password = Key
+    remitente = 'testvocacionalunt@gmail.com'
+    password = 'dgowglpmcrkohzcz'
 
     # Crear objeto MIME multipart
     mensaje = MIMEMultipart('alternative')
