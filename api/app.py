@@ -2,9 +2,14 @@ from flask import Flask, make_response, request, jsonify
 from flask_pymongo import PyMongo, ObjectId
 from flask_cors import CORS
 import pdfkit
-from config import Key, Url
 
+from dotenv import load_dotenv
+import os
 
+load_dotenv()
+
+Key = os.environ.get("KEY_GMAIL")
+Url = os.environ.get("URL_DBM")
 
 app = Flask(__name__)
 #Dar dirección Local
