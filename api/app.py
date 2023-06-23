@@ -593,8 +593,8 @@ def generarPDF(DNI):
 
 # Función para enviar correo electrónico con adjunto
 def enviarCorreo(destinatario, asunto, cuerpo, adjunto):
-    remitente = 'testvocacionalunt@gmail.com'
-    password = 'dgowglpmcrkohzcz'
+    remitente = 'nobelcacdemy@gmail.com'
+    password = 'czpfdxnjriluhgyh'
 
     # Crear objeto MIME multipart
     mensaje = MIMEMultipart('alternative')
