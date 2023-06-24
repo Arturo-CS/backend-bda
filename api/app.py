@@ -2,11 +2,32 @@ from flask import Flask, make_response, request, jsonify
 from flask_pymongo import PyMongo, ObjectId
 from flask_cors import CORS
 import pdfkit
+from datetime import datetime, timedelta
+from flask import current_app
+import jwt
+import datetime
+from datetime import datetime
+import pdfkit
+from flask import Flask, make_response
+import io
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
+from email import encoders
+from bson import ObjectId
+
 
 app = Flask(__name__)
 #Dar dirección Local
 app.config['SECRET_KEY'] = 'mysecretkey'
 app.config['MONGO_URI'] = 'mongodb+srv://cortegana:hV7fXizMZLzN7PR5@cluster0.jvpg63q.mongodb.net/Nobel'
+
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'  # Configura el servidor de correo saliente
+app.config['MAIL_PORT'] = 587  # Configura el puerto del servidor de correo
+app.config['MAIL_USE_TLS'] = True  # Configura TLS para la seguridad del correo
+app.config['MAIL_USERNAME'] = 'nobelcacdemy@gmail.com'  # Configura el correo electrónico del remitente
+app.config['MAIL_PASSWORD'] = 'czpfdxnjriluhgyh'  # Configura la contraseña del correo electrónico del remitente
 
 #Se declara la conexión con la variable mongo
 mongo = PyMongo(app)
@@ -24,12 +45,6 @@ dbInfo = mongo.db['Informacion']
 dbSecre = mongo.db['Secretarias']
 dbAdmin = mongo.db['Administrador']
 dbCoor = mongo.db.Coordinador
-
-#CREAR TOKEN
-from datetime import datetime, timedelta
-from flask import current_app
-import jwt
-import datetime
 
 def generar_token(usuario):
     cod_administrador = usuario['cod_administrador']
@@ -114,8 +129,6 @@ def obtenerAdmin():
     token = generar_token(admin_data)
     
     return jsonify({'token': token}), 200
-
-
 
 
 
@@ -407,16 +420,6 @@ def guardar_info():
     return jsonify(str(result.inserted_id))
 
 
-from datetime import datetime
-import pdfkit
-from flask import Flask, make_response
-import io
-import smtplib
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-from email.mime.base import MIMEBase
-from email import encoders
-
 #GENERAR PDF PARA ENVIAR
 @app.route('/generar-pdf/<DNI>', methods=['GET'])
 def generarPDF(DNI):
@@ -593,7 +596,7 @@ def generarPDF(DNI):
 
 # Función para enviar correo electrónico con adjunto
 def enviarCorreo(destinatario, asunto, cuerpo, adjunto):
-    remitente = 'nobelcacdemy@gmail.com'
+    remitente = app.config['MAIL_USERNAME']
     password = 'czpfdxnjriluhgyh'
 
     # Crear objeto MIME multipart
@@ -613,17 +616,15 @@ def enviarCorreo(destinatario, asunto, cuerpo, adjunto):
     mensaje.attach(adjunto_mime)
 
     # Establecer conexión SMTP
-    servidor_smtp = smtplib.SMTP('smtp.gmail.com', 587)
+    servidor_smtp = smtplib.SMTP(app.config['MAIL_SERVER'], app.config['MAIL_PORT'])
     servidor_smtp.starttls()
-    servidor_smtp.login(remitente, password)
+    servidor_smtp.login(app.config['MAIL_USERNAME'], app.config['MAIL_PASSWORD'])
 
     # Enviar correo electrónico
-    servidor_smtp.sendmail(remitente, destinatario, mensaje.as_string())
+    servidor_smtp.sendmail(app.config['MAIL_USERNAME'], destinatario, mensaje.as_string())
     servidor_smtp.quit()
 
 
-
-from bson import ObjectId
 
 @app.route('/datos-letras', methods=['GET'])
 def datosLetras():
